@@ -29,8 +29,8 @@ def check_market():
 
             funding_rate = float(coin['lastFundingRate'])
 
-            # 🔴 燈號一：資金費率極度負值 (低於 -0.05%)
-            if funding_rate < -0.0005:
+            # 🔴 燈號一：資金費率極度負值 (低於 -0.02%)
+            if funding_rate < -0.0002:
                 
                 # 🔴 燈號二：調取歷史 OI 數據，比對 5 分鐘內的持倉變化幅度
                 # 雲端版免記憶記憶體，直接向幣安拿最近兩條 5 分鐘的 K 線持倉紀錄
@@ -46,8 +46,8 @@ def check_market():
                     if old_oi > 0:
                         oi_change_pct = ((current_oi - old_oi) / old_oi) * 100
                         
-                        # 判定 5 分鐘內新空頭是不是不信邪瘋狂加倉 (> 2.0%)
-                        if oi_change_pct > 2.0:
+                        # 判定 5 分鐘內新空頭是不是不信邪瘋狂加倉 (> 1.5%)
+                        if oi_change_pct > 1.5:
                             
                             # 🔴 燈號三：抓取最新 5 分鐘現貨成交量，確認主力是否有實質點火行為
                             spot_url = f"https://api.binance.com/api/v3/klines?symbol={symbol}&interval=5m&limit=1"
@@ -55,10 +55,10 @@ def check_market():
                             current_volume = float(spot_data[0][5])
                             
                             # 三燈判定吻合，即刻對手機發送獵殺推播
-                            msg = f"🚨 雲端嘎空警報：{symbol}\n" \
-                                  f"🔥 資金費率：{funding_rate*100:.4f}%\n" \
-                                  f"📈 5M 持倉暴增：+{oi_change_pct:.2f}%\n" \
-                                  f"👉 雲端偵測高勝率組合！請立刻開啟 Coinglass 確認現貨 CVD 是否出現垂直買入的大綠柱！"
+                            msg = f"📡 早期雷達預警：{symbol}\n" \
+                            f"🔥 資金費率：{funding_rate*100:.4f}%\n" \
+                            f"📈 5M 持倉增幅：+{oi_change_pct:.2f}%\n" \
+                            f"👉 空軍正在集結！請提早關注 Coinglass 留意現貨主力是否開始點火！"
                             
                             send_telegram_message(msg)
                             print(f" 發現嘎空目標: {symbol}")
