@@ -1,0 +1,29 @@
+name: Squeeze Hunter Bot Cron
+
+on:
+  schedule:
+    # 使用 Cron 排程：每 5 分鐘觸發一次雲端掃描
+    - cron: '*/5 * * * *'
+  workflow_dispatch: # 允許你隨時進 GitHub 網頁手動點擊「Run」即時測試
+
+jobs:
+  run-hunter:
+    runs-on: ubuntu-latest
+    steps:
+    - name: 步驟 1 - 載入專案程式碼
+      uses: actions/checkout@v4
+
+    - name: 步驟 2 - 初始化 Python 環境
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+
+    - name: 步驟 3 - 安裝依賴套件
+      run: |
+        pip install requests
+
+    - name: 步驟 4 - 導入 Secrets 並執行無情盯盤
+      env:
+        TG_BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
+        TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
+      run: python hunter.py
